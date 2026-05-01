@@ -2758,11 +2758,12 @@ render();
   </div>
 
   <!-- Navegação de mês -->
-  <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:14px;">
+  <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:10px;">
     <button onclick="nkNavMes(-1)" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);cursor:pointer;padding:5px 14px;font-size:1rem;">&#8249;</button>
     <span id="nubankMesLabel" style="font-weight:600;font-size:.95rem;min-width:130px;text-align:center;color:var(--text);"></span>
     <button onclick="nkNavMes(1)" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);cursor:pointer;padding:5px 14px;font-size:1rem;">&#8250;</button>
   </div>
+  <button onclick="openNovaCompra()" style="width:100%;margin-bottom:12px;padding:10px;background:linear-gradient(135deg,#78909c,#546e7a);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;box-shadow:0 4px 14px rgba(84,110,122,.3);">+ Nova compra</button>
 
   <!-- Header com totais -->
   <div class="nubank-header">
