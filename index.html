@@ -1780,48 +1780,53 @@ function applyAllData_OLD(json){
 
 function findOrCreateFile(cb){
   if(gFileId){ cb(gFileId); return; }
-  // Check saved id
   var saved = localStorage.getItem('gdrive_fileid3');
   if(saved){ gFileId=saved; cb(gFileId); return; }
-  // Search in appDataFolder
-  gapi.client.request({
-    path: 'https://www.googleapis.com/drive/v3/files',
-    method: 'GET',
-    params: {spaces:'appDataFolder', q:"name='"+FILE_NAME+"'", fields:'files(id,name)'}
-  }).then(function(res){
-    var files = res.result.files;
-    if(files && files.length > 0){
-      gFileId = files[0].id;
+
+  // Search for existing file
+  fetch('https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name%3D%27'+encodeURIComponent(FILE_NAME)+'%27&fields=files(id%2Cname)', {
+    headers: {'Authorization': 'Bearer '+gAccessToken}
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(res){
+    if(res.files && res.files.length > 0){
+      gFileId = res.files[0].id;
       localStorage.setItem('gdrive_fileid3', gFileId);
       cb(gFileId);
     } else {
-      // Create new file
-      gapi.client.request({
-        path: 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',
+      // Create new file using fetch with proper multipart
+      var boundary = 'foo_bar_baz';
+      var metadata = JSON.stringify({name: FILE_NAME, parents: ['appDataFolder']});
+      var body = '--'+boundary+'\r\n'
+        +'Content-Type: application/json; charset=UTF-8\r\n\r\n'
+        +metadata+'\r\n'
+        +'--'+boundary+'\r\n'
+        +'Content-Type: application/json\r\n\r\n'
+        +getAllData()+'\r\n'
+        +'--'+boundary+'--';
+      fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
         method: 'POST',
-        headers: {'Content-Type': 'multipart/related; boundary=boundary'},
-        body: '--boundary\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n'
-          + JSON.stringify({name:FILE_NAME, parents:['appDataFolder']})
-          + '\r\n--boundary\r\nContent-Type: application/json\r\n\r\n'
-          + getAllData()
-          + '\r\n--boundary--'
-      }).then(function(r){
-        gFileId = r.result.id;
-        localStorage.setItem('gdrive_fileid3', gFileId);
-        cb(gFileId);
-      });
+        headers: {
+          'Authorization': 'Bearer '+gAccessToken,
+          'Content-Type': 'multipart/related; boundary='+boundary
+        },
+        body: body
+      })
+      .then(function(r){ return r.json(); })
+      .then(function(newFile){
+        if(newFile.id){
+          gFileId = newFile.id;
+          localStorage.setItem('gdrive_fileid3', gFileId);
+          cb(gFileId);
+        } else {
+          setSyncStatus('error','Erro ao criar arquivo: '+JSON.stringify(newFile));
+        }
+      })
+      .catch(function(e){ setSyncStatus('error','Erro ao criar: '+e.message); });
     }
-  }).catch(function(err){
-    // Token may have expired
-    if(err.status===401){
-      gAccessToken=null;
-      localStorage.removeItem('gdrive_token');
-      setSyncStatus('error','Sessão expirada — reconecte');
-      document.getElementById('btnGdrive').textContent='Reconectar';
-      document.getElementById('btnGdrive').classList.remove('connected');
-    } else {
-      setSyncStatus('error','Erro de sincronização');
-    }
+  })
+  .catch(function(e){
+    setSyncStatus('error','Erro de rede: '+e.message);
   });
 }
 
@@ -1829,25 +1834,35 @@ function saveToDrive(){
   if(!gAccessToken) return;
   setSyncStatus('syncing','Salvando...');
   findOrCreateFile(function(fileId){
-    gapi.client.request({
-      path: 'https://www.googleapis.com/upload/drive/v3/files/'+fileId+'?uploadType=media',
+    fetch('https://www.googleapis.com/upload/drive/v3/files/'+fileId+'?uploadType=media', {
       method: 'PATCH',
-      headers: {'Content-Type':'application/json'},
+      headers: {
+        'Authorization': 'Bearer '+gAccessToken,
+        'Content-Type': 'application/json'
+      },
       body: getAllData()
-    }).then(function(){
-      setSyncStatus('connected','Sincronizado \u2713');
-    }).catch(function(err){
-      var status = err && err.status;
-      if(status === 401 || status === 403){
-        gAccessToken = null;
-        localStorage.removeItem('gdrive_was_connected');
-        setSyncStatus('error','Sessão expirada — reconecte');
-        document.getElementById('btnGdrive').textContent='Reconectar';
-        document.getElementById('btnGdrive').classList.remove('connected');
+    })
+    .then(function(r){
+      if(r.ok){
+        setSyncStatus('connected','Sincronizado \u2713');
       } else {
-        setSyncStatus('error','Erro ao salvar');
+        return r.json().then(function(e){
+          if(r.status===401||r.status===403){
+            gAccessToken=null;
+            localStorage.removeItem('gdrive_was_connected');
+            setSyncStatus('error','Sessão expirada');
+            var btn=document.getElementById('btnGdrive');
+            if(btn){btn.textContent='Reconectar';btn.classList.remove('connected');}
+          } else if(r.status===404){
+            gFileId=null; localStorage.removeItem('gdrive_fileid3');
+            saveToDrive();
+          } else {
+            setSyncStatus('error','Erro ao salvar ('+r.status+')');
+          }
+        });
       }
-    });
+    })
+    .catch(function(e){ setSyncStatus('error','Erro de rede ao salvar'); });
   });
 }
 
@@ -1858,11 +1873,10 @@ function loadFromDrive(){
   gFileId = null;
   localStorage.removeItem('gdrive_fileid3');
   findOrCreateFile(function(fileId){
-    gapi.client.request({
-      path: 'https://www.googleapis.com/drive/v3/files/'+fileId+'?alt=media',
-      method: 'GET',
-    }).then(function(res){
-      var body = typeof res.body === 'string' ? res.body : JSON.stringify(res.result);
+    fetch('https://www.googleapis.com/drive/v3/files/'+fileId+'?alt=media', {
+      headers: {'Authorization': 'Bearer '+gAccessToken}
+    }).then(function(r){ return r.text(); })
+    .then(function(body){
       // Check if body has actual data before applying
       try{
         var parsed = JSON.parse(body);
