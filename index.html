@@ -1607,7 +1607,7 @@ function getAllData(){
     var k=localStorage.key(i);
     if(k&&k.indexOf('nk_')===0) nkData[k]=JSON.parse(localStorage.getItem(k)||'[]');
   }
-  return JSON.stringify({expenses:expenses,notes:notes,receitas:receitas,cats:cats,nk:nkData,v:3});
+  return JSON.stringify({expenses:expenses,notes:notes,receitas:receitas,cats:cats,nk:nkData,psiPacientes:PSI_PACIENTES,v:3});
 }
 function getAllData_OLD(){
   return JSON.stringify({expenses:expenses, notes:notes, receitas:receitas, cats:cats, v:2});
@@ -1620,9 +1620,16 @@ function applyAllData(json){
     if(d.notes)    notes=d.notes;
     if(d.receitas) receitas=d.receitas;
     if(d.cats)     cats=d.cats;
+    if(d.psiPacientes) { PSI_PACIENTES=d.psiPacientes; savePsiPacientes(); }
     if(d.nk){ Object.keys(d.nk).forEach(function(k){ localStorage.setItem(k,JSON.stringify(d.nk[k])); }); }
-    persist();render();
-  }catch(e){console.error('Drive parse error',e);}
+    // Persist to localStorage then re-render
+    _origPersist();
+    render();
+    showToast('Dados carregados do Google Drive ✓');
+  }catch(e){
+    console.error('Drive parse error',e);
+    showToast('Erro ao ler dados do Drive');
+  }
 }
 function applyAllData_OLD(json){
   try{
@@ -1712,27 +1719,50 @@ function saveToDrive(){
 function loadFromDrive(){
   if(!gAccessToken) return;
   setSyncStatus('syncing','Carregando dados...');
+  // Search for existing file first — don't use cached fileId that may be stale
+  gFileId = null;
+  localStorage.removeItem('gdrive_fileid3');
   findOrCreateFile(function(fileId){
     gapi.client.request({
       path: 'https://www.googleapis.com/drive/v3/files/'+fileId+'?alt=media',
       method: 'GET',
     }).then(function(res){
       var body = typeof res.body === 'string' ? res.body : JSON.stringify(res.result);
-      applyAllData(body);
-      setSyncStatus('connected','Sincronizado \u2713');
+      // Check if body has actual data before applying
+      try{
+        var parsed = JSON.parse(body);
+        if(parsed && (parsed.expenses || parsed.receitas || parsed.cats)){
+          applyAllData(body);
+          setSyncStatus('connected','Sincronizado ✓');
+        } else {
+          // Empty file — save local data to Drive
+          setSyncStatus('connected','Sincronizado ✓');
+          saveToDrive();
+        }
+      } catch(e){
+        // Invalid JSON — save local data
+        setSyncStatus('connected','Sincronizado ✓');
+        saveToDrive();
+      }
     }).catch(function(err){
       var status = err && err.status;
       if(status === 401 || status === 403){
-        // Token expired during session
         gAccessToken = null;
         localStorage.removeItem('gdrive_was_connected');
         setSyncStatus('error','Sessão expirada');
-        document.getElementById('btnGdrive').textContent='Reconectar';
-        document.getElementById('btnGdrive').classList.remove('connected');
+        var btn = document.getElementById('btnGdrive');
+        if(btn){ btn.textContent='Reconectar'; btn.classList.remove('connected'); }
         showToast('Sessão expirada. Toque em Reconectar.');
-      } else {
-        // File is new/empty — save current data
+      } else if(status === 404){
+        // File deleted — create new and save
+        gFileId = null;
+        localStorage.removeItem('gdrive_fileid3');
         saveToDrive();
+        setSyncStatus('connected','Sincronizado ✓');
+      } else {
+        // New file — upload current data
+        saveToDrive();
+        setSyncStatus('connected','Sincronizado ✓');
       }
     });
   });
