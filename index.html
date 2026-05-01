@@ -365,6 +365,18 @@
     <span id="syncStatus">Não conectado ao Google Drive</span>
   </div>
   <button class="btn-gdrive" id="btnGdrive" onclick="handleGdriveBtn()">Conectar</button>
+  <button onclick="runDiagnostico()" style="background:none;border:1px solid #3d4a70;border-radius:8px;color:#9ba8c8;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.68rem;padding:5px 10px;margin-left:6px;" title="Diagnóstico do Drive">🔍</button>
+</div>
+
+<!-- Modal Diagnóstico -->
+<div id="diagModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:999;align-items:center;justify-content:center;">
+  <div style="background:#1a1d2e;border:1px solid #3d4a70;border-radius:16px;padding:20px;width:90%;max-width:480px;max-height:80vh;overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <strong style="color:#f0f4ff;font-size:.95rem;">🔍 Diagnóstico Drive</strong>
+      <button onclick="document.getElementById('diagModal').style.display='none'" style="background:none;border:none;color:#9ba8c8;cursor:pointer;font-size:1.1rem;">✕</button>
+    </div>
+    <div id="diagLog" style="font-family:monospace;font-size:.75rem;color:#c4b5fd;line-height:1.8;white-space:pre-wrap;"></div>
+  </div>
 </div>
 
 <!-- Atraso banner -->
@@ -758,6 +770,129 @@ function getMonthExp(y,m){
 
 
 
+
+
+// ══ DIAGNÓSTICO DRIVE ══
+function runDiagnostico(){
+  var modal = document.getElementById('diagModal');
+  var log   = document.getElementById('diagLog');
+  modal.style.display = 'flex';
+  log.textContent = '';
+
+  function line(txt, color){
+    var span = document.createElement('span');
+    span.style.color = color || '#c4b5fd';
+    span.textContent = txt + '\n';
+    log.appendChild(span);
+  }
+
+  line('=== DIAGNÓSTICO GOOGLE DRIVE ===', '#f0f4ff');
+  line('');
+
+  // 1. Client ID
+  line('1. CLIENT_ID: ' + (CLIENT_ID ? CLIENT_ID.substring(0,20)+'...' : 'NÃO DEFINIDO'), CLIENT_ID ? '#4ade80' : '#f87171');
+
+  // 2. gdriveReady
+  line('2. gdriveReady: ' + gdriveReady, gdriveReady ? '#4ade80' : '#f87171');
+
+  // 3. gAccessToken
+  line('3. gAccessToken: ' + (gAccessToken ? 'PRESENTE ('+gAccessToken.substring(0,12)+'...)' : 'AUSENTE'), gAccessToken ? '#4ade80' : '#fdba74');
+
+  // 4. gdrive_was_connected
+  var wc = localStorage.getItem('gdrive_was_connected');
+  line('4. was_connected: ' + (wc || 'não'), wc ? '#4ade80' : '#fdba74');
+
+  // 5. gdrive_fileid3
+  var fid = localStorage.getItem('gdrive_fileid3');
+  line('5. fileId salvo: ' + (fid ? fid.substring(0,20)+'...' : 'nenhum'), '#c4b5fd');
+
+  // 6. google.accounts disponível
+  var gisOk = typeof google !== 'undefined' && google.accounts && google.accounts.oauth2;
+  line('6. google.accounts.oauth2: ' + (gisOk ? 'OK' : 'NÃO CARREGADO'), gisOk ? '#4ade80' : '#f87171');
+
+  // 7. gapi.client disponível
+  var gapiOk = typeof gapi !== 'undefined' && gapi.client;
+  line('7. gapi.client: ' + (gapiOk ? 'OK' : 'NÃO CARREGADO'), gapiOk ? '#4ade80' : '#f87171');
+
+  line('');
+
+  if(!gAccessToken){
+    line('⚠ Sem token — não conectado.', '#fdba74');
+    line('→ Clique em Conectar primeiro.', '#fdba74');
+    return;
+  }
+
+  // 8. Test token validity
+  line('8. Verificando token...', '#9ba8c8');
+  fetch('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=' + gAccessToken)
+    .then(function(r){ return r.json(); })
+    .then(function(info){
+      if(info.error){
+        line('   Token INVÁLIDO: ' + info.error, '#f87171');
+      } else {
+        line('   Token válido por mais ' + info.expires_in + 's', '#4ade80');
+        line('   Scope: ' + (info.scope || '?'), '#c4b5fd');
+      }
+
+      // 9. Test Drive API access
+      line('');
+      line('9. Testando acesso ao Drive...', '#9ba8c8');
+      gapi.client.request({
+        path: 'https://www.googleapis.com/drive/v3/files',
+        method: 'GET',
+        params: {spaces:'appDataFolder', fields:'files(id,name)', pageSize:10}
+      }).then(function(res){
+        var files = res.result.files || [];
+        line('   Drive acessível ✓', '#4ade80');
+        line('   Arquivos em appDataFolder: ' + files.length, '#c4b5fd');
+        files.forEach(function(f){
+          line('   → ' + f.name + ' (id:' + f.id.substring(0,16)+'...)', '#a5b4fc');
+        });
+
+        if(files.length === 0){
+          line('');
+          line('⚠ Nenhum arquivo encontrado.', '#fdba74');
+          line('→ Primeiro uso: salve algo para criar o arquivo.', '#fdba74');
+        } else {
+          // 10. Try to read the file
+          line('');
+          line('10. Lendo arquivo de dados...', '#9ba8c8');
+          var fileId = files[0].id;
+          gapi.client.request({
+            path: 'https://www.googleapis.com/drive/v3/files/'+fileId+'?alt=media',
+            method: 'GET',
+          }).then(function(res2){
+            var body = typeof res2.body === 'string' ? res2.body : JSON.stringify(res2.result);
+            line('    Tamanho: ' + body.length + ' bytes', '#c4b5fd');
+            try{
+              var parsed = JSON.parse(body);
+              line('    JSON válido ✓', '#4ade80');
+              line('    expenses: ' + (parsed.expenses ? Object.keys(parsed.expenses).length + ' anos' : 'vazio'), '#a5b4fc');
+              line('    receitas: ' + (parsed.receitas ? Object.keys(parsed.receitas).length + ' registros' : 'vazio'), '#a5b4fc');
+              line('    cats: ' + (parsed.cats ? parsed.cats.length + ' categorias' : 'vazio'), '#a5b4fc');
+              line('    v: ' + (parsed.v || '?'), '#a5b4fc');
+              line('');
+              line('✓ Dados encontrados! Aplicando agora...', '#4ade80');
+              gFileId = fileId;
+              localStorage.setItem('gdrive_fileid3', fileId);
+              applyAllData(body);
+              setSyncStatus('connected','Sincronizado ✓');
+            } catch(e){
+              line('    ERRO ao parsear JSON: ' + e.message, '#f87171');
+              line('    Conteúdo: ' + body.substring(0,100), '#f87171');
+            }
+          }).catch(function(e2){
+            line('    ERRO ao ler arquivo: ' + JSON.stringify(e2), '#f87171');
+          });
+        }
+      }).catch(function(e){
+        line('   ERRO ao acessar Drive: ' + JSON.stringify(e), '#f87171');
+        if(e.status === 403){
+          line('   → Scope insuficiente ou app não autorizado', '#fdba74');
+        }
+      });
+    });
+}
 
 // ══ ALIASES CARTÃO ══
 function abrirNubankDoMes(){
