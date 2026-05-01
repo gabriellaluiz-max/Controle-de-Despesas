@@ -344,6 +344,12 @@
     color:#fff;cursor:pointer;font-family:'DM Sans',sans-serif;
     font-size:.72rem;font-weight:700;padding:5px 10px;white-space:nowrap;
   }
+
+
+  /* Botão + Cadastrar paciente — âmbar */
+  button.btn-cadastrar-pac{background:#78350f !important;border:1px solid #d97706 !important;color:#fcd34d !important;font-weight:700 !important;}
+  button.btn-cadastrar-pac:hover{background:#92400e !important;border-color:#f59e0b !important;color:#fde68a !important;}
+
 </style>
 </head>
 <body>
@@ -617,9 +623,7 @@
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="https://apis.google.com/js/api.js" async defer onload="gapiLoaded()"></script>
 
-  /* Botão + Cadastrar paciente — âmbar */
-  button.btn-cadastrar-pac{background:#78350f !important;border:1px solid #d97706 !important;color:#fcd34d !important;font-weight:700 !important;}
-  button.btn-cadastrar-pac:hover{background:#92400e !important;border-color:#f59e0b !important;color:#fde68a !important;}
+  
 <script>
 // ══ CONSTANTS ══
 var MONTHS_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
@@ -1513,36 +1517,44 @@ function gapiLoaded(){
   gapi.load('client', function(){
     gapi.client.init({}).then(function(){
       gdriveReady = true;
-      // Validate saved token before using it
-      var saved = localStorage.getItem('gdrive_token3');
-      if(saved){
-        // Verify token is still valid with a lightweight API call
-        fetch('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token='+saved)
-          .then(function(r){ return r.json(); })
-          .then(function(info){
-            if(info.error || !info.expires_in || parseInt(info.expires_in) < 60){
-              // Token expired — clear it and prompt reconnect
-              localStorage.removeItem('gdrive_token3');
-              setSyncStatus('error','Token expirado — reconecte');
-              document.getElementById('btnGdrive').textContent='Reconectar';
-              showToast('Sessão expirada. Reconecte ao Google Drive.');
-            } else {
-              // Token valid
-              gAccessToken = saved;
-              gapi.client.setToken({access_token: gAccessToken});
-              setSyncStatus('connected','Conectado ao Google Drive');
-              document.getElementById('btnGdrive').textContent='Sincronizado';
-              document.getElementById('btnGdrive').classList.add('connected');
-              loadFromDrive();
-            }
-          })
-          .catch(function(){
-            localStorage.removeItem('gdrive_token3');
-            setSyncStatus('error','Erro de conexão — reconecte');
-          });
+      // Never reuse saved tokens - they expire in 1h and can't be validated reliably
+      // Instead: auto-trigger a silent reconnect if user was previously connected
+      var wasConnected = localStorage.getItem('gdrive_was_connected');
+      if(wasConnected){
+        // Try silent token refresh (no popup)
+        setSyncStatus('','Reconectando...');
+        _silentSignIn();
       }
     });
   });
+}
+
+function _silentSignIn(){
+  try{
+    var client = google.accounts.oauth2.initTokenClient({
+      client_id: CLIENT_ID,
+      scope: SCOPES,
+      prompt: '', // empty = silent, no popup
+      callback: function(resp){
+        if(resp && resp.access_token){
+          gAccessToken = resp.access_token;
+          gapi.client.setToken({access_token: gAccessToken});
+          setSyncStatus('connected','Conectado ao Google Drive');
+          var btn = document.getElementById('btnGdrive');
+          if(btn){ btn.textContent='Sincronizado'; btn.classList.add('connected'); }
+          loadFromDrive();
+        } else {
+          // Silent failed - user needs to click
+          setSyncStatus('error','Clique para reconectar');
+          var btn = document.getElementById('btnGdrive');
+          if(btn){ btn.textContent='Reconectar'; }
+        }
+      },
+    });
+    client.requestAccessToken();
+  } catch(e){
+    setSyncStatus('error','Clique para reconectar');
+  }
 }
 
 function handleGdriveBtn(){
@@ -1550,7 +1562,7 @@ function handleGdriveBtn(){
     // Disconnect
     gAccessToken = null;
     gFileId = null;
-    localStorage.removeItem('gdrive_token3');
+    localStorage.removeItem('gdrive_was_connected');
     localStorage.removeItem('gdrive_fileid3');
     setSyncStatus('','Não conectado ao Google Drive');
     var btn = document.getElementById('btnGdrive');
@@ -1570,10 +1582,9 @@ function signInWithGoogle(){
       if(resp.error){ setSyncStatus('error','Erro ao conectar'); return; }
       gAccessToken = resp.access_token;
       gapi.client.setToken({access_token: gAccessToken});
-      localStorage.setItem('gdrive_token3', gAccessToken);
-      // Store expiry (tokens last ~3600s, save with margin)
-      var expiry = Date.now() + (resp.expires_in ? (resp.expires_in - 120) * 1000 : 3000000);
-      localStorage.setItem('gdrive_token_expiry', expiry);
+      // Never store the token itself - it expires in 1h
+      // Just remember user consented so we can silent-refresh next time
+      localStorage.setItem('gdrive_was_connected', '1');
       setSyncStatus('connected','Conectado ao Google Drive');
       var btn = document.getElementById('btnGdrive');
       btn.textContent='Sincronizado';
@@ -1687,7 +1698,7 @@ function saveToDrive(){
       var status = err && err.status;
       if(status === 401 || status === 403){
         gAccessToken = null;
-        localStorage.removeItem('gdrive_token3');
+        localStorage.removeItem('gdrive_was_connected');
         setSyncStatus('error','Sessão expirada — reconecte');
         document.getElementById('btnGdrive').textContent='Reconectar';
         document.getElementById('btnGdrive').classList.remove('connected');
@@ -1714,7 +1725,7 @@ function loadFromDrive(){
       if(status === 401 || status === 403){
         // Token expired during session
         gAccessToken = null;
-        localStorage.removeItem('gdrive_token3');
+        localStorage.removeItem('gdrive_was_connected');
         setSyncStatus('error','Sessão expirada');
         document.getElementById('btnGdrive').textContent='Reconectar';
         document.getElementById('btnGdrive').classList.remove('connected');
