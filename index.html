@@ -135,13 +135,13 @@
   .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
   .fg{display:flex;flex-direction:column;gap:4px;}
   .fg.full{grid-column:span 2;}
-  .fg label{font-size:.63rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);}
-  input,select{background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.88rem;padding:9px 11px;width:100%;-webkit-appearance:none;transition:border-color .2s;}
+  .fg label{font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:#a5b4fc;font-weight:700;}
+  input,select{background:#1a1f35;border:1px solid #3d4a70;border-radius:8px;color:#f0f4ff;font-weight:600;font-family:'DM Sans',sans-serif;font-size:.88rem;padding:9px 11px;width:100%;-webkit-appearance:none;transition:border-color .2s;}
   input:focus,select:focus{outline:none;border-color:var(--accent);}
   select option{background:var(--surface2);color:var(--text);}
 
   .status-toggle{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
-  .status-btn{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.7rem;padding:8px 4px;text-align:center;transition:all .2s;}
+  .status-btn{background:#1e2235;border:2px solid #3d4a70;border-radius:10px;color:#9ba8c8;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:700;padding:11px 6px;transition:all .18s;}
   .status-btn.active[data-s="pago"]{background:#dcfce7;border-color:#86efac;color:#16a34a;}
   .status-btn.active[data-s="agendado"]{background:#dbeafe;border-color:#93c5fd;color:#1d4ed8;}
   .status-btn.active[data-s="pendente"]{background:#f1f5f9;border-color:#cbd5e1;color:#64748b;}
@@ -265,19 +265,19 @@
   #pdfContent{display:none;}
 
   /* PSICOLOGIA */
-  .psi-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;}
+  .psi-item{background:#2e1065;border:1px solid #6d28d9;border-left:4px solid #a78bfa;border-radius:12px;padding:12px 14px;margin-bottom:10px;}
   .psi-item-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
-  .psi-item-name{font-size:.8rem;font-weight:600;color:var(--accent);}
-  .psi-item-total{font-size:.8rem;font-weight:700;color:var(--green);}
+  .psi-item-name{font-size:.88rem;font-weight:700;color:#ede9fe;border-bottom:1px dashed #6d28d9;padding-bottom:1px;}
+  .psi-item-total{font-size:.88rem;font-weight:800;color:#c4b5fd;}
   .psi-sessoes{display:grid;grid-template-columns:1fr auto auto auto;gap:6px;align-items:center;margin-bottom:5px;}
   .psi-sessoes:last-of-type{margin-bottom:0;}
   .psi-sessao-label{font-size:.72rem;color:var(--muted);}
-  .psi-input{background:var(--surface);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.82rem;padding:6px 8px;outline:none;transition:border-color .2s;width:100%;}
-  .psi-input:focus{border-color:var(--accent);}
+  .psi-input{background:#1e1040;border:1px solid #4c1d95;border-radius:7px;color:#ede9fe;font-family:'DM Sans',sans-serif;font-size:.82rem;padding:6px 8px;outline:none;transition:border-color .2s;width:100%;}
+  .psi-input:focus{border-color:#a78bfa;}
   .psi-input-sm{width:72px;text-align:center;}
   .psi-input-date{width:110px;}
-  .btn-add-sessao{background:none;border:1px dashed var(--border);border-radius:7px;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.7rem;padding:5px 10px;margin-top:5px;width:100%;transition:all .2s;}
-  .btn-add-sessao:hover{border-color:var(--accent);color:var(--accent);}
+  .btn-add-sessao{background:#0f4c3a;border:1px solid #059669;border-radius:8px;color:#6ee7b7;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:600;padding:7px 10px;margin-top:6px;width:100%;transition:all .2s;}
+  .btn-add-sessao:hover{background:#065f46;border-color:#34d399;color:#a7f3d0;}
 
   /* RECEITAS BREAKDOWN */
   .receitas-breakdown{margin-bottom:10px;}
@@ -301,6 +301,49 @@
   .overlay.open{align-items:center !important;}
   .sheet{border-radius:16px !important;max-height:85vh;margin:auto;}
 }
+
+  /* ── Botões coloridos ── */
+  .rec-card-senado{background:#1d4ed8 !important;border-color:#2563eb !important;}
+  .rec-card-senado .rec-card-label{color:#bfdbfe !important;}
+  .rec-card-senado .rec-card-val{color:#ffffff !important;}
+  .rec-card-senado .rec-card-hint{color:#93c5fd !important;}
+
+  .rec-card-psi{background:#7c3aed !important;border-color:#8b5cf6 !important;}
+  .rec-card-psi .rec-card-label{color:#ede9fe !important;}
+  .rec-card-psi .rec-card-val{color:#ffffff !important;}
+  .rec-card-psi .rec-card-hint{color:#ddd6fe !important;}
+
+  input:focus,select:focus,textarea:focus{border-color:#818cf8;outline:none;box-shadow:0 0 0 2px rgba(129,140,248,.18);}
+
+  .status-btn.active[data-s="pago"]{background:#14532d;border-color:#4ade80;color:#4ade80;box-shadow:0 0 0 2px rgba(74,222,128,.2);}
+  .status-btn.active[data-s="agendado"]{background:#1e3a5f;border-color:#60a5fa;color:#60a5fa;box-shadow:0 0 0 2px rgba(96,165,250,.2);}
+  .status-btn.active[data-s="pendente"]{background:#451a03;border-color:#fdba74;color:#fdba74;box-shadow:0 0 0 2px rgba(253,186,116,.2);}
+  .status-btn:not(.active):hover{border-color:#818cf8;color:#a5b4fc;}
+
+
+  /* SYNC WARNING BANNER */
+  .sync-warning-bar{
+    display:none;
+    align-items:center;
+    gap:10px;
+    background:#451a03;
+    border:1px solid #f97316;
+    border-radius:10px;
+    padding:10px 14px;
+    margin-bottom:14px;
+    font-size:.8rem;
+    font-weight:600;
+    color:#fdba74;
+    animation:fadeIn .25s ease;
+  }
+  .sync-warning-bar.show{display:flex;}
+  .sync-warning-bar .sw-icon{font-size:1.1rem;flex-shrink:0;}
+  .sync-warning-bar .sw-text{flex:1;line-height:1.4;}
+  .sync-warning-bar .sw-btn{
+    background:#ea580c;border:none;border-radius:7px;
+    color:#fff;cursor:pointer;font-family:'DM Sans',sans-serif;
+    font-size:.72rem;font-weight:700;padding:5px 10px;white-space:nowrap;
+  }
 </style>
 </head>
 <body>
@@ -356,11 +399,11 @@
     <span class="receitas-total" id="receitasTotal">-</span>
   </div>
   <div class="rec-cards">
-    <div class="rec-card" onclick="openOverlaySenado()">
+    <div class="rec-card rec-card-senado" onclick="openOverlaySenado()">
       <div><div class="rec-card-label">&#127963; Senado</div><div class="rec-card-hint">toque para editar</div></div>
       <div class="rec-card-val" id="recSenado">-</div>
     </div>
-    <div class="rec-card" onclick="openOverlayPsi()">
+    <div class="rec-card rec-card-psi" onclick="openOverlayPsi()">
       <div><div class="rec-card-label">&#128300; Psicologia</div><div class="rec-card-hint">toque para editar</div></div>
       <div class="rec-card-val" id="recPsi">-</div>
     </div>
@@ -393,7 +436,7 @@
   <span id="listCount">0</span>
 </div>
 
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;margin-bottom:10px;"><button class="btn-new" onclick="openForm()" style="margin-top:0;">+ Nova despesa</button><button class="btn-new" onclick="abrirNubankDoMes()" style="margin-top:0;background:linear-gradient(135deg,#78909c,#546e7a);box-shadow:0 4px 14px rgba(84,110,122,.3);">💳 Cartão de Crédito</button></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;margin-bottom:10px;"><button class="btn-new" onclick="openForm()" style="margin-top:0;background:linear-gradient(135deg,#16a34a,#059669);box-shadow:0 4px 14px rgba(22,163,74,.35);">+ Nova despesa</button><button class="btn-new" onclick="abrirNubankDoMes()" style="margin-top:0;background:linear-gradient(135deg,#ea580c,#dc2626);box-shadow:0 4px 14px rgba(234,88,12,.35);">💳 Cartão de Crédito</button></div>
 <div class="expense-list" id="expenseList"></div>
 
     </div>
@@ -408,6 +451,7 @@
     <h2>&#127963; Senado — Salário</h2>
     <button class="btn-close" onclick="closeOverlaySenado()">&#x2715;</button>
   </div>
+  <div class="sync-warning-bar" id="syncWarnSenado"><span class="sw-icon">⚠️</span><span class="sw-text">App não sincronizado — os dados não serão salvos na nuvem.</span><button class="sw-btn" onclick="handleGdriveBtn()">Conectar</button></div>
   <div class="fg full" style="margin-bottom:16px;">
     <label style="font-size:.75rem;font-weight:600;color:var(--muted);display:block;margin-bottom:10px;">Salário líquido recebido</label>
     <input type="text" id="senSalario" placeholder="0,00" inputmode="decimal" oninput="onSalarioMask(this)" class="receita-input" style="font-size:1.3rem;font-weight:700;padding:14px 16px;text-align:right;"/>
@@ -423,12 +467,13 @@
     <h2>&#128300; Psicologia</h2>
     <button class="btn-close" onclick="closeOverlayPsi()">&#x2715;</button>
   </div>
+  <div class="sync-warning-bar" id="syncWarnPsi"><span class="sw-icon">⚠️</span><span class="sw-text">App não sincronizado — os dados não serão salvos na nuvem.</span><button class="sw-btn" onclick="handleGdriveBtn()">Conectar</button></div>
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
     <span style="font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);">Total do mês</span>
     <span class="receitas-total" id="psiTotal">-</span>
   </div>
   <div id="psiPacientesList"></div>
-  <button class="btn-add-sessao" onclick="cadastrarPaciente()" style="margin-top:10px;font-size:.8rem;">+ Cadastrar paciente</button>
+  <button class="btn-add-sessao btn-cadastrar-pac" onclick="cadastrarPaciente()" style="margin-top:10px;font-size:.8rem;">+ Cadastrar paciente</button>
  </div>
 </div>
 
@@ -465,6 +510,7 @@
     <h2 id="formTitle">Nova despesa</h2>
     <button class="btn-close" onclick="closeForm()">&#x2715;</button>
   </div>
+  <div class="sync-warning-bar" id="syncWarnForm"><span class="sw-icon">⚠️</span><span class="sw-text">App não sincronizado — os dados não serão salvos na nuvem.</span><button class="sw-btn" onclick="handleGdriveBtn()">Conectar</button></div>
   <div class="form-grid">
     <div class="fg full"><label>Descricao</label><input type="text" id="fDesc" placeholder="Ex: Conta de luz"/></div>
     <div class="fg"><label>Valor (R$)</label><input type="number" id="fVal" placeholder="0,00" step="0.01" min="0" inputmode="decimal"/></div>
@@ -570,6 +616,10 @@
 
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="https://apis.google.com/js/api.js" async defer onload="gapiLoaded()"></script>
+
+  /* Botão + Cadastrar paciente — âmbar */
+  button.btn-cadastrar-pac{background:#78350f !important;border:1px solid #d97706 !important;color:#fcd34d !important;font-weight:700 !important;}
+  button.btn-cadastrar-pac:hover{background:#92400e !important;border-color:#f59e0b !important;color:#fde68a !important;}
 <script>
 // ══ CONSTANTS ══
 var MONTHS_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
@@ -715,6 +765,18 @@ function atualizarNubankNoMes(y, m){
   nkCurY = y; nkCurM = m;
   updateNubankExpValue();
   nkCurY = savedY; nkCurM = savedM;
+}
+
+
+// ══ SYNC WARNING ══
+var SYNC_WARN_IDS = ['syncWarnForm','syncWarnSenado','syncWarnPsi','syncWarnNubank','syncWarnCompra'];
+
+function showSyncWarnings(){
+  var notConnected = !gAccessToken;
+  SYNC_WARN_IDS.forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.classList.toggle('show', notConnected);
+  });
 }
 
 // ══ RENDER ══
@@ -932,6 +994,7 @@ function buildVarRows(){
   }
 }
 function openForm(){
+  showSyncWarnings();
   editId=null;
   document.getElementById('formTitle').textContent='Nova despesa';
   document.getElementById('btnSave').textContent='Salvar';
@@ -1450,15 +1513,33 @@ function gapiLoaded(){
   gapi.load('client', function(){
     gapi.client.init({}).then(function(){
       gdriveReady = true;
-      // Try to restore token from localStorage
+      // Validate saved token before using it
       var saved = localStorage.getItem('gdrive_token3');
       if(saved){
-        gAccessToken = saved;
-        gapi.client.setToken({access_token: gAccessToken});
-        setSyncStatus('connected','Conectado ao Google Drive');
-        document.getElementById('btnGdrive').textContent='Sincronizado';
-        document.getElementById('btnGdrive').classList.add('connected');
-        loadFromDrive();
+        // Verify token is still valid with a lightweight API call
+        fetch('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token='+saved)
+          .then(function(r){ return r.json(); })
+          .then(function(info){
+            if(info.error || !info.expires_in || parseInt(info.expires_in) < 60){
+              // Token expired — clear it and prompt reconnect
+              localStorage.removeItem('gdrive_token3');
+              setSyncStatus('error','Token expirado — reconecte');
+              document.getElementById('btnGdrive').textContent='Reconectar';
+              showToast('Sessão expirada. Reconecte ao Google Drive.');
+            } else {
+              // Token valid
+              gAccessToken = saved;
+              gapi.client.setToken({access_token: gAccessToken});
+              setSyncStatus('connected','Conectado ao Google Drive');
+              document.getElementById('btnGdrive').textContent='Sincronizado';
+              document.getElementById('btnGdrive').classList.add('connected');
+              loadFromDrive();
+            }
+          })
+          .catch(function(){
+            localStorage.removeItem('gdrive_token3');
+            setSyncStatus('error','Erro de conexão — reconecte');
+          });
       }
     });
   });
@@ -1490,6 +1571,9 @@ function signInWithGoogle(){
       gAccessToken = resp.access_token;
       gapi.client.setToken({access_token: gAccessToken});
       localStorage.setItem('gdrive_token3', gAccessToken);
+      // Store expiry (tokens last ~3600s, save with margin)
+      var expiry = Date.now() + (resp.expires_in ? (resp.expires_in - 120) * 1000 : 3000000);
+      localStorage.setItem('gdrive_token_expiry', expiry);
       setSyncStatus('connected','Conectado ao Google Drive');
       var btn = document.getElementById('btnGdrive');
       btn.textContent='Sincronizado';
@@ -1599,8 +1683,17 @@ function saveToDrive(){
       body: getAllData()
     }).then(function(){
       setSyncStatus('connected','Sincronizado \u2713');
-    }).catch(function(){
-      setSyncStatus('error','Erro ao salvar');
+    }).catch(function(err){
+      var status = err && err.status;
+      if(status === 401 || status === 403){
+        gAccessToken = null;
+        localStorage.removeItem('gdrive_token3');
+        setSyncStatus('error','Sessão expirada — reconecte');
+        document.getElementById('btnGdrive').textContent='Reconectar';
+        document.getElementById('btnGdrive').classList.remove('connected');
+      } else {
+        setSyncStatus('error','Erro ao salvar');
+      }
     });
   });
 }
@@ -1616,9 +1709,20 @@ function loadFromDrive(){
       var body = typeof res.body === 'string' ? res.body : JSON.stringify(res.result);
       applyAllData(body);
       setSyncStatus('connected','Sincronizado \u2713');
-    }).catch(function(){
-      // File is new/empty — save current data
-      saveToDrive();
+    }).catch(function(err){
+      var status = err && err.status;
+      if(status === 401 || status === 403){
+        // Token expired during session
+        gAccessToken = null;
+        localStorage.removeItem('gdrive_token3');
+        setSyncStatus('error','Sessão expirada');
+        document.getElementById('btnGdrive').textContent='Reconectar';
+        document.getElementById('btnGdrive').classList.remove('connected');
+        showToast('Sessão expirada. Toque em Reconectar.');
+      } else {
+        // File is new/empty — save current data
+        saveToDrive();
+      }
     });
   });
 }
@@ -1637,6 +1741,7 @@ persist = function(){
 
 // ══ OVERLAY SENADO ══
 function openOverlaySenado(){
+  showSyncWarnings();
   var rec = getRec(curY, curM);
   var si = document.getElementById('senSalario');
   if(si) si.value = rec.salario != null ? rec.salario.toLocaleString('pt-BR',{minimumFractionDigits:2}) : '';
@@ -1649,6 +1754,7 @@ function closeOverlaySenado(){
 
 // ══ OVERLAY PSI ══
 function openOverlayPsi(){
+  showSyncWarnings();
   renderPsiPanel();
   document.getElementById('overlayPsi').classList.add('open');
 }
@@ -2178,6 +2284,7 @@ function getFuturoComprometido(){
 }
 
 function openNubank(expId){
+  showSyncWarnings();
   nubankExpId = expId;
   nkCurY = curY;
   nkCurM = curM;
@@ -2322,6 +2429,7 @@ function updateNubankExpValue(){
 }
 
 function openNovaCompra(){
+  showSyncWarnings();
   editCompraId=null;
   document.getElementById('novaCompraTitle').textContent='Nova compra';
   document.getElementById('ncDesc').value='';
@@ -2750,6 +2858,7 @@ render();
     <h2 style="color:#546e7a;">💳 Cartão de Crédito</h2>
     <button class="btn-close" onclick="closeNubank()">&#x2715;</button>
   </div>
+  <div class="sync-warning-bar" id="syncWarnNubank"><span class="sw-icon">⚠️</span><span class="sw-text">App não sincronizado — os dados não serão salvos na nuvem.</span><button class="sw-btn" onclick="handleGdriveBtn()">Conectar</button></div>
 
   <!-- Navegação de mês -->
   <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:10px;">
@@ -2802,6 +2911,7 @@ render();
     <h2 id="novaCompraTitle" style="color:#8b5cf6;">Nova compra</h2>
     <button class="btn-close" onclick="closeNovaCompra()">&#x2715;</button>
   </div>
+  <div class="sync-warning-bar" id="syncWarnCompra"><span class="sw-icon">⚠️</span><span class="sw-text">App não sincronizado — os dados não serão salvos na nuvem.</span><button class="sw-btn" onclick="handleGdriveBtn()">Conectar</button></div>
   <div class="form-grid">
     <div class="fg full"><label>Descrição</label><input type="text" id="ncDesc" placeholder="Ex: Supermercado"/></div>
     <div class="fg"><label>Valor (R$)</label><input type="text" id="ncVal" placeholder="0,00" inputmode="decimal" oninput="applyMoneyMask(this)"/></div>
