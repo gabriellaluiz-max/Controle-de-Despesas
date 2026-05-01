@@ -834,15 +834,20 @@ function runDiagnostico(){
         line('   Scope: ' + (info.scope || '?'), '#c4b5fd');
       }
 
-      // 9. Test Drive API access
+      // 9. Test Drive API access via fetch
       line('');
       line('9. Testando acesso ao Drive...', '#9ba8c8');
-      gapi.client.request({
-        path: 'https://www.googleapis.com/drive/v3/files',
-        method: 'GET',
-        params: {spaces:'appDataFolder', fields:'files(id,name)', pageSize:10}
-      }).then(function(res){
-        var files = res.result.files || [];
+      fetch('https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&fields=files(id%2Cname)&pageSize=10', {
+        headers: {'Authorization': 'Bearer '+gAccessToken}
+      })
+      .then(function(r){ return r.json(); })
+      .then(function(res){
+        var files = res.files || [];
+        if(res.error){
+          line('   ERRO: ' + res.error.message, '#f87171');
+          line('   Código: ' + res.error.code, '#f87171');
+          return;
+        }
         line('   Drive acessível ✓', '#4ade80');
         line('   Arquivos em appDataFolder: ' + files.length, '#c4b5fd');
         files.forEach(function(f){
@@ -852,17 +857,62 @@ function runDiagnostico(){
         if(files.length === 0){
           line('');
           line('⚠ Nenhum arquivo encontrado.', '#fdba74');
-          line('→ Primeiro uso: salve algo para criar o arquivo.', '#fdba74');
+          line('→ Clique em "Forçar Upload" para criar o arquivo agora.', '#fdba74');
+          // Add force upload button
+          var btn = document.createElement('button');
+          btn.textContent = '⬆ Forçar Upload dos dados';
+          btn.style.cssText = 'margin-top:12px;background:#1d4ed8;border:none;border-radius:8px;color:#fff;cursor:pointer;font-family:sans-serif;font-size:.8rem;font-weight:700;padding:10px 16px;width:100%;';
+          btn.onclick = function(){
+            btn.textContent = 'Enviando...';
+            btn.disabled = true;
+            var boundary = 'tchitcha_boundary';
+            var metadata = JSON.stringify({name: FILE_NAME, parents: ['appDataFolder']});
+            var body = '--'+boundary+'\r\n'
+              +'Content-Type: application/json; charset=UTF-8\r\n\r\n'
+              +metadata+'\r\n'
+              +'--'+boundary+'\r\n'
+              +'Content-Type: application/json\r\n\r\n'
+              +getAllData()+'\r\n'
+              +'--'+boundary+'--';
+            fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+              method: 'POST',
+              headers: {
+                'Authorization': 'Bearer '+gAccessToken,
+                'Content-Type': 'multipart/related; boundary='+boundary
+              },
+              body: body
+            })
+            .then(function(r){ return r.json(); })
+            .then(function(f){
+              if(f.id){
+                gFileId = f.id;
+                localStorage.setItem('gdrive_fileid3', f.id);
+                line('✓ Arquivo criado com sucesso! ID: '+f.id.substring(0,20)+'...', '#4ade80');
+                setSyncStatus('connected','Sincronizado ✓');
+                btn.textContent = '✓ Enviado!';
+              } else {
+                line('✗ Erro ao criar: '+JSON.stringify(f), '#f87171');
+                btn.textContent = '✗ Erro';
+                btn.disabled = false;
+              }
+            })
+            .catch(function(e){
+              line('✗ Erro de rede: '+e.message, '#f87171');
+              btn.textContent = '✗ Erro de rede';
+              btn.disabled = false;
+            });
+          };
+          document.getElementById('diagLog').appendChild(btn);
         } else {
           // 10. Try to read the file
           line('');
           line('10. Lendo arquivo de dados...', '#9ba8c8');
           var fileId = files[0].id;
-          gapi.client.request({
-            path: 'https://www.googleapis.com/drive/v3/files/'+fileId+'?alt=media',
-            method: 'GET',
-          }).then(function(res2){
-            var body = typeof res2.body === 'string' ? res2.body : JSON.stringify(res2.result);
+          fetch('https://www.googleapis.com/drive/v3/files/'+fileId+'?alt=media', {
+            headers: {'Authorization': 'Bearer '+gAccessToken}
+          })
+          .then(function(r){ return r.text(); })
+          .then(function(body){
             line('    Tamanho: ' + body.length + ' bytes', '#c4b5fd');
             try{
               var parsed = JSON.parse(body);
@@ -870,26 +920,22 @@ function runDiagnostico(){
               line('    expenses: ' + (parsed.expenses ? Object.keys(parsed.expenses).length + ' anos' : 'vazio'), '#a5b4fc');
               line('    receitas: ' + (parsed.receitas ? Object.keys(parsed.receitas).length + ' registros' : 'vazio'), '#a5b4fc');
               line('    cats: ' + (parsed.cats ? parsed.cats.length + ' categorias' : 'vazio'), '#a5b4fc');
-              line('    v: ' + (parsed.v || '?'), '#a5b4fc');
               line('');
-              line('✓ Dados encontrados! Aplicando agora...', '#4ade80');
+              line('✓ Dados encontrados! Aplicando...', '#4ade80');
               gFileId = fileId;
               localStorage.setItem('gdrive_fileid3', fileId);
               applyAllData(body);
               setSyncStatus('connected','Sincronizado ✓');
             } catch(e){
-              line('    ERRO ao parsear JSON: ' + e.message, '#f87171');
-              line('    Conteúdo: ' + body.substring(0,100), '#f87171');
+              line('    ERRO ao parsear: ' + e.message, '#f87171');
+              line('    Conteúdo: ' + body.substring(0,200), '#f87171');
             }
-          }).catch(function(e2){
-            line('    ERRO ao ler arquivo: ' + JSON.stringify(e2), '#f87171');
-          });
+          })
+          .catch(function(e){ line('    ERRO ao ler: '+e.message, '#f87171'); });
         }
-      }).catch(function(e){
-        line('   ERRO ao acessar Drive: ' + JSON.stringify(e), '#f87171');
-        if(e.status === 403){
-          line('   → Scope insuficiente ou app não autorizado', '#fdba74');
-        }
+      })
+      .catch(function(e){
+        line('   ERRO de rede: ' + e.message, '#f87171');
       });
     });
 }
