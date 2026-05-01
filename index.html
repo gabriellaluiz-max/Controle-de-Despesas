@@ -15,14 +15,19 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0f1117;--surface:#1a1d2e;--surface2:#242838;--border:#2e3350;
-    --text:#e2e8f0;--muted:#8892aa;--accent:#818cf8;--accent2:#6366f1;
-    --red:#f87171;--green:#4ade80;--blue:#60a5fa;--orange:#fb923c;--purple:#a78bfa;
-    --shadow:0 1px 3px rgba(0,0,0,.4),0 1px 2px rgba(0,0,0,.3);
-    --shadow-md:0 4px 6px rgba(0,0,0,.4),0 2px 4px rgba(0,0,0,.3);
+    --bg:#181c27;--surface:#232840;--surface2:#2c3354;--border:#3d4a70;
+    --text:#f0f4ff;--muted:#9ba8c8;--accent:#a5b4fc;--accent2:#818cf8;
+    --red:#ff8080;--green:#4ade80;--blue:#7dd3fc;--orange:#fdba74;--purple:#c4b5fd;
+    --shadow:0 2px 6px rgba(0,0,0,.35),0 1px 3px rgba(0,0,0,.25);
+    --shadow-md:0 6px 16px rgba(0,0,0,.4),0 3px 6px rgba(0,0,0,.3);
+    /* Card accent colors */
+    --card-receitas:#1a2e1a;--card-receitas-border:#2d6a2d;
+    --card-despesas:#2e1a1a;--card-despesas-border:#7f2020;
+    --card-saldo:#1a1a35;--card-saldo-border:#3a3a8a;
+    --card-cartao:#1a2535;--card-cartao-border:#2d5080;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:20px 16px 120px;max-width:520px;margin:0 auto;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:20px 16px 120px;max-width:520px;margin:0 auto;font-size:16px;}
 
   header{text-align:center;padding:8px 0 18px;}
   header h1{font-family:'DM Sans',sans-serif;font-size:1.5rem;font-weight:600;color:var(--accent);letter-spacing:-.02em;}
@@ -48,10 +53,10 @@
   .value.red{color:var(--red);}.value.green{color:var(--green);}.value.orange{color:var(--orange);}
 
   /* RECEITAS */
-  .receitas-section{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:var(--shadow);}
+  .receitas-section{background:var(--card-receitas);border:1px solid var(--card-receitas-border);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:var(--shadow);}
   .receitas-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
   .receitas-header em{font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-style:normal;}
-  .receitas-total{font-weight:700;font-size:.95rem;color:var(--green);}
+  .receitas-total{font-weight:800;font-size:1.05rem;color:var(--green);}
   .receita-row{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;margin-bottom:8px;}
   .receita-row:last-of-type{margin-bottom:0;}
   .receita-label{font-size:.78rem;color:var(--muted);}
@@ -64,7 +69,7 @@
   .btn-add-receita:hover{border-color:var(--accent);color:var(--accent);}
 
   /* SALDO */
-  .saldo-card{border-radius:12px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;border:1px solid var(--border);box-shadow:var(--shadow);}
+  .saldo-card{border:1px solid var(--card-saldo-border);border-radius:12px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;border:1px solid var(--border);box-shadow:var(--shadow);}
   .saldo-card.positivo{background:linear-gradient(135deg,#f0fdf4,#dcfce7);border-color:#86efac;}
   .saldo-card.negativo{background:linear-gradient(135deg,#fff1f2,#ffe4e6);border-color:#fca5a5;}
   .saldo-card.neutro{background:var(--surface);}
@@ -85,11 +90,11 @@
   .btn-cfg{background:var(--surface);border:1px solid var(--border);border-radius:11px;color:var(--muted);cursor:pointer;font-size:1rem;padding:11px 14px;transition:all .2s;box-shadow:var(--shadow);}
   .btn-cfg:hover{border-color:var(--accent);color:var(--accent);}
 
-  .section-title{font-size:.63rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:8px;display:flex;justify-content:space-between;}
+  .section-title{font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text);font-weight:700;margin-bottom:8px;display:flex;justify-content:space-between;}
 
   /* EXPENSE LIST */
   .expense-list{display:flex;flex-direction:column;gap:6px;}
-  .expense-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .2s;animation:fadeIn .2s ease;box-shadow:var(--shadow);}
+  .expense-item{background:var(--surface);border-left:3px solid var(--accent2);border-top:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .2s;animation:fadeIn .2s ease;box-shadow:var(--shadow);}
   .expense-item:hover{border-color:var(--accent);box-shadow:var(--shadow-md);}
   @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 
@@ -123,7 +128,7 @@
   .sheet{background:var(--surface);border-radius:20px 20px 0 0;padding:22px 18px 44px;width:100%;max-width:520px;animation:slideUp .26s ease;max-height:92vh;overflow-y:auto;}
   @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
   .sheet-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
-  .sheet-header h2{font-size:1.05rem;font-weight:600;color:var(--text);}
+  .sheet-header h2{font-size:1.15rem;font-weight:700;color:var(--text);}
   .btn-close{background:var(--surface2);border:none;border-radius:50%;color:var(--muted);cursor:pointer;font-size:.9rem;width:28px;height:28px;flex-shrink:0;}
 
   /* FORM */
@@ -224,7 +229,7 @@
   .btn-gdrive.connected{border-color:#86efac;color:#16a34a;background:#dcfce7;}
 
 /* CARTÃO NUBANK */
-  .nubank-header{background:linear-gradient(135deg,#1c2b35,#1a2533);border-radius:12px;padding:16px;margin-bottom:14px;color:#fff;}
+  .nubank-header{background:var(--card-cartao);border:1px solid var(--card-cartao-border);border-radius:12px;padding:16px;margin-bottom:14px;color:#fff;}
   .nubank-header label{font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;opacity:.8;display:block;margin-bottom:4px;}
   .nubank-vals{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
   .nubank-val-item label{font-size:.6rem;text-transform:uppercase;letter-spacing:.08em;opacity:.75;display:block;margin-bottom:3px;}
@@ -285,10 +290,10 @@
 
   /* REC-CARDS */
   .rec-cards{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:4px;}
-  .rec-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);}
+  .rec-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);}
   .rec-card:hover,.rec-card:active{border-color:var(--accent);box-shadow:var(--shadow-md);}
-  .rec-card-label{font-size:.75rem;font-weight:600;color:var(--text);}
-  .rec-card-val{font-weight:700;font-size:1rem;color:var(--green);}
+  .rec-card-label{font-size:.82rem;font-weight:700;color:var(--text);}
+  .rec-card-val{font-weight:800;font-size:1.15rem;color:var(--green);}
   .rec-card-val.muted{color:var(--muted);font-size:.8rem;font-weight:400;}
   .rec-card-hint{font-size:.6rem;color:var(--muted);opacity:.7;}
 
@@ -403,28 +408,11 @@
     <h2>&#127963; Senado — Salário</h2>
     <button class="btn-close" onclick="closeOverlaySenado()">&#x2715;</button>
   </div>
-  <div class="fg full" style="margin-bottom:10px;">
-    <label>Salário Bruto</label>
-    <input type="text" id="senSalario" placeholder="0,00" inputmode="decimal" oninput="onSalarioMask(this)" class="receita-input" style="font-size:1rem;padding:10px 12px;"/>
+  <div class="fg full" style="margin-bottom:16px;">
+    <label style="font-size:.75rem;font-weight:600;color:var(--muted);display:block;margin-bottom:10px;">Salário líquido recebido</label>
+    <input type="text" id="senSalario" placeholder="0,00" inputmode="decimal" oninput="onSalarioMask(this)" class="receita-input" style="font-size:1.3rem;font-weight:700;padding:14px 16px;text-align:right;"/>
   </div>
-  <div class="fg full" style="margin-bottom:6px;">
-    <label style="font-size:.63rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);display:block;margin-bottom:8px;">Descontos fixos</label>
-    <div class="cc-row">
-      <div class="cc-label">INSS</div>
-      <input type="text" class="cc-input" id="ccINSS" placeholder="0,00" inputmode="decimal" oninput="onDescontoInputMask(this,'inss')" />
-    </div>
-    <div class="cc-row">
-      <div class="cc-label">IR</div>
-      <input type="text" class="cc-input" id="ccIR" placeholder="0,00" inputmode="decimal" oninput="onDescontoInputMask(this,'ir')" />
-    </div>
-    <div id="descontosEventuais"></div>
-    <button class="btn-add-desconto" onclick="addDescontoEventual()">+ Desconto eventual</button>
-    <div class="cc-divider"></div>
-    <div class="cc-liquido">
-      <div class="cc-liquido-label">Salário líquido</div>
-      <div class="cc-liquido-val" id="salarioLiquido">-</div>
-    </div>
-  </div>
+  <button class="btn-save" onclick="closeOverlaySenado()" style="width:100%;">Salvar</button>
  </div>
 </div>
 
@@ -745,7 +733,7 @@ function render(){
   renderContracheque(curY,curM);
   renderOutrasReceitas(rec);
   // psi rendered on overlay open
-  var salEf=(rec.salarioLiquido!=null)?rec.salarioLiquido:(rec.salario||0);
+  var salEf=rec.salario||0;
   var psiTot=Object.values(rec.psi||{}).reduce(function(s,itens){return s+itens.reduce(function(s2,i){return s2+(i.valor||0);},0);},0);
   var totalRec=salEf+psiTot+(rec.outras||[]).reduce(function(s,o){return s+(o.val||0);},0);
   document.getElementById('receitasTotal').textContent=totalRec>0?R(totalRec):'-';
@@ -869,7 +857,7 @@ function delOutraReceita(id){
   updateReceitasUI(rec);
 }
 function updateReceitasUI(rec){
-  var salEfetivo = (rec.salarioLiquido != null) ? rec.salarioLiquido : (rec.salario||0);
+  var salEfetivo = rec.salario || 0;
   var psiTotal = Object.values(rec.psi||{}).reduce(function(s,itens){
     return s + itens.reduce(function(s2,i){return s2+(i.valor||0);},0);
   },0);
@@ -1281,33 +1269,17 @@ function delEvDesc(id){
 
 function calcLiquido(y,m){
   var rec = getRec(y,m);
-  var bruto = rec.salario || 0;
-  var cc = rec.cc || {};
-  var totalDesc = (cc.inss||0) + (cc.ir||0)
-    + (cc.eventuais||[]).reduce(function(s,e){return s+(e.val||0);},0);
-  var liquido = bruto - totalDesc;
-
-  var psiRec = Object.values(rec.psi||{}).reduce(function(s,itens){return s+itens.reduce(function(s2,i){return s2+(i.valor||0);},0);},0);
+  var salario = rec.salario || 0;
+  var psiRec = Object.values(rec.psi||{}).reduce(function(s,itens){
+    return s + itens.reduce(function(s2,i){ return s2+(i.valor||0); },0);
+  },0);
   var outrasRec = psiRec + (rec.outras||[]).reduce(function(s,o){return s+(o.val||0);},0);
-
-  var el = document.getElementById('salarioLiquido');
-  if(bruto > 0){
-    el.textContent = R(liquido);
-    el.style.color = liquido >= 0 ? 'var(--green)' : 'var(--red)';
-    rec.salarioLiquido = liquido;
-  } else {
-    el.textContent = '-';
-    rec.salarioLiquido = null;
-  }
-
+  var total = salario + outrasRec;
+  // update receitas UI
   updateReceitasUI(rec);
+  document.getElementById('receitasTotal').textContent = total > 0 ? R(total) : '-';
+  var elS = document.getElementById('recSenado'); if(elS) elS.textContent = salario > 0 ? R(salario) : '-';
 }
-
-
-// ══ RELATÓRIO ══
-var relMesesSel = [];
-var relCatsSel  = [];
-var relHtml     = '';
 
 function openRelatorio(){
   var sel = document.getElementById('relAno');
@@ -1665,8 +1637,11 @@ persist = function(){
 
 // ══ OVERLAY SENADO ══
 function openOverlaySenado(){
-  renderContracheque(curY,curM);
+  var rec = getRec(curY, curM);
+  var si = document.getElementById('senSalario');
+  if(si) si.value = rec.salario != null ? rec.salario.toLocaleString('pt-BR',{minimumFractionDigits:2}) : '';
   document.getElementById('overlaySenado').classList.add('open');
+  if(si) setTimeout(function(){ si.focus(); si.select(); }, 100);
 }
 function closeOverlaySenado(){
   document.getElementById('overlaySenado').classList.remove('open');
@@ -1762,7 +1737,9 @@ function renderPsiPanel(){
         +'<button class="btn-del-receita psi-del-btn" style="flex-shrink:0">&#x2715;</button>'
         +'</div>';
     });
-    out += '<button class="btn-add-sessao psi-add-btn" data-nome="'+nome+'" style="font-size:.7rem">+ Novo recebimento</button>'
+    var obsVal = (psi[nome+'__obs']||'');
+    out += '<textarea class="psi-obs-inp" data-nome="'+nome+'" placeholder="Observações..." rows="2" style="width:100%;margin-top:8px;background:#1a1d2e;border:1px solid #3d4a70;border-radius:8px;color:#f0f4ff;font-size:.8rem;padding:8px 10px;resize:vertical;outline:none;">'+obsVal+'</textarea>'
+      +'<button class="btn-add-sessao psi-add-btn" data-nome="'+nome+'" style="font-size:.7rem;margin-top:4px;">+ Novo recebimento</button>'
       +'</div>';
   });
   div.innerHTML = out;
@@ -1805,6 +1782,14 @@ function renderPsiPanel(){
   });
   div.querySelectorAll('.psi-add-btn').forEach(function(el){
     el.addEventListener('click', function(){ addPacienteReceita(el.dataset.nome); });
+  });
+  div.querySelectorAll('.psi-obs-inp').forEach(function(el){
+    el.addEventListener('input', function(){
+      var rec = getRec(curY, curM);
+      if(!rec.psi) rec.psi = {};
+      rec.psi[el.dataset.nome+'__obs'] = el.value;
+      setRec(curY, curM, rec);
+    });
   });
   updateReceitasUI(getRec(curY,curM));
 }
@@ -2049,9 +2034,7 @@ function gerarRelatorioPsi(){
 
 
 // ══ CARTÃO DE CRÉDITO ══
-var NK_CATS_DEFAULT = ['Utilidade Domestica','Roupas','Calcados','Viagem','Hotel',
-  'Restaurante','Medicamentos','Presentes','Festas','Supermercado','Padaria',
-  'Combustivel','Manutencao Casa','Assinaturas','Saude','Educacao','Eletronicos','Outros'];
+var NK_CATS_DEFAULT = ['Assinaturas','Calcados','Combustivel','Educacao','Eletronicos','Festas','Hotel','Manutencao Casa','Medicamentos','Outros','Padaria','Presentes','Restaurante','Roupas','Saude','Supermercado','Utilidade Domestica','Viagem'];
 
 function getNKCats(){ return JSON.parse(localStorage.getItem('nk_cats')||JSON.stringify(NK_CATS_DEFAULT)); }
 function setNKCats(arr){ localStorage.setItem('nk_cats',JSON.stringify(arr)); }
@@ -2158,10 +2141,9 @@ function calcNubankTotal(y,m){
     var c=item.c, storY=item.storY, storM=item.storM;
     if(!c.date) return s;
     if(c.parcelas>1){
-      // Parcelado: usa data da compra para calcular offset
-      var cd = new Date(c.date+'T00:00:00');
-      var compraM = cd.getMonth()+1, compraY = cd.getFullYear();
-      var offset = (y - compraY)*12 + (m - compraM);
+      // Parcelado: offset a partir do MÊS DA FATURA (respeitando fechamento dia 13)
+      var fatM2 = mesFaturaNubank(c.date);
+      var offset = (y - fatM2.y)*12 + (m - fatM2.m);
       if(offset>=0 && offset<c.parcelas) return s + Math.round(c.val/c.parcelas*100)/100;
     } else {
       // À vista: pertence ao mês onde foi armazenada (mês da fatura)
@@ -2228,9 +2210,8 @@ function renderNubank(){
     var c=item.c, storY=item.storY, storM=item.storM;
     if(!c.date) return false;
     if(c.parcelas>1){
-      var cd = new Date(c.date+'T00:00:00');
-      var cm = cd.getMonth()+1, cy = cd.getFullYear();
-      var offset = (y-cy)*12+(m-cm);
+      var fatMr = mesFaturaNubank(c.date);
+      var offset = (y-fatMr.y)*12+(m-fatMr.m);
       return offset>=0 && offset<c.parcelas;
     }
     // À vista: aparece no mês onde foi armazenada
@@ -2274,9 +2255,12 @@ function renderNubank(){
   var sorted = comprasDoMes.slice().sort(function(a,b){return (b.date||'').localeCompare(a.date||'');});
   document.getElementById('nubankComprasList').innerHTML = sorted.map(function(c){
     // Calcula qual parcela é esta no mês atual
-    var cd = new Date((c.date||'2026-01-01')+'T00:00:00');
-    var cm = cd.getMonth()+1, cy = cd.getFullYear();
-    var offset = (curY-cy)*12+(curM-cm);
+    // Offset from fatura month (respects day-13 closing rule)
+    var fatLbl = mesFaturaNubank(c.date||'2026-01-01');
+    var offset = (nkCurY||curY - fatLbl.y)*12+(nkCurM||curM - fatLbl.m);
+    // recalc properly
+    var _y = nkCurY||curY, _m = nkCurM||curM;
+    offset = (_y - fatLbl.y)*12 + (_m - fatLbl.m);
     var valorParcela = c.parcelas>1 ? Math.round(c.val/c.parcelas*100)/100 : c.val;
     var parcNum = c.parcelas>1 ? (offset+1)+'/'+c.parcelas : '';
     var parcLabel = c.parcelas>1 ? '<span class="ci-parc">'+parcNum+' · '+R(valorParcela)+'</span>' : '';
