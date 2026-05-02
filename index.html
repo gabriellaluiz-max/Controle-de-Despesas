@@ -30,7 +30,7 @@
   body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:20px 16px 120px;max-width:520px;margin:0 auto;font-size:16px;}
 
   header{text-align:center;padding:8px 0 18px;}
-  header h1{font-family:'DM Sans',sans-serif;font-size:1.5rem;font-weight:600;color:var(--accent);letter-spacing:-.02em;}
+  header h1{font-family:'DM Sans',sans-serif;font-size:1.5rem;font-weight:700;color:#f472b6;letter-spacing:-.02em;}
   header p{font-size:.68rem;color:var(--muted);margin-top:3px;letter-spacing:.1em;text-transform:uppercase;}
 
   /* YEAR NAV */
@@ -141,23 +141,23 @@
   select option{background:var(--surface2);color:var(--text);}
 
   .status-toggle{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
-  .status-btn{background:#1e2235;border:2px solid #3d4a70;border-radius:10px;color:#9ba8c8;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:700;padding:11px 6px;transition:all .18s;}
-  .status-btn.active[data-s="pago"]{background:#dcfce7;border-color:#86efac;color:#16a34a;}
-  .status-btn.active[data-s="agendado"]{background:#dbeafe;border-color:#93c5fd;color:#1d4ed8;}
-  .status-btn.active[data-s="pendente"]{background:#f1f5f9;border-color:#cbd5e1;color:#64748b;}
+  .status-btn{border:2px solid transparent;border-radius:10px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:700;padding:11px 6px;transition:all .18s;opacity:.55;filter:brightness(.7);}
+  
+  
+  
 
   .repeat-section{grid-column:span 2;border-top:1px solid var(--border);padding-top:12px;margin-top:2px;}
   .repeat-section label.section-lbl{font-size:.63rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);display:block;margin-bottom:8px;}
   .repeat-opts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px;}
-  .repeat-opt{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.7rem;padding:8px 4px;text-align:center;transition:all .2s;}
-  .repeat-opt.active{background:#ede9fe;border-color:#a78bfa;color:var(--accent);}
+  .repeat-opt{background:#1e2235;border:1px solid var(--border);border-radius:8px;color:#9ba8c8;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.7rem;padding:8px 4px;text-align:center;transition:all .2s;}
+  
   .repeat-body{display:none;}
   .repeat-body.open{display:block;}
   .month-rows{display:flex;flex-direction:column;gap:7px;margin-top:8px;}
   .month-row{display:grid;grid-template-columns:90px 1fr;gap:8px;align-items:center;}
   .month-row span{font-size:.78rem;color:var(--muted);}
 
-  .btn-save{width:100%;margin-top:16px;background:var(--accent);border:none;border-radius:10px;color:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;padding:12px;cursor:pointer;transition:background .2s,transform .1s;box-shadow:0 4px 14px rgba(99,102,241,.3);}
+  .btn-save{width:100%;margin-top:16px;background:#2563eb;border:none;border-radius:10px;color:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;padding:12px;cursor:pointer;transition:background .2s,transform .1s;box-shadow:0 4px 14px rgba(99,102,241,.3);;box-shadow:0 4px 16px rgba(37,99,235,.45);}
   .btn-save:active{transform:scale(.98);}
 
   /* SETTINGS */
@@ -315,10 +315,10 @@
 
   input:focus,select:focus,textarea:focus{border-color:#818cf8;outline:none;box-shadow:0 0 0 2px rgba(129,140,248,.18);}
 
-  .status-btn.active[data-s="pago"]{background:#14532d;border-color:#4ade80;color:#4ade80;box-shadow:0 0 0 2px rgba(74,222,128,.2);}
-  .status-btn.active[data-s="agendado"]{background:#1e3a5f;border-color:#60a5fa;color:#60a5fa;box-shadow:0 0 0 2px rgba(96,165,250,.2);}
-  .status-btn.active[data-s="pendente"]{background:#451a03;border-color:#fdba74;color:#fdba74;box-shadow:0 0 0 2px rgba(253,186,116,.2);}
-  .status-btn:not(.active):hover{border-color:#818cf8;color:#a5b4fc;}
+  
+  
+  
+  
 
 
   /* SYNC WARNING BANNER */
@@ -350,12 +350,33 @@
   button.btn-cadastrar-pac{background:#78350f !important;border:1px solid #d97706 !important;color:#fcd34d !important;font-weight:700 !important;}
   button.btn-cadastrar-pac:hover{background:#92400e !important;border-color:#f59e0b !important;color:#fde68a !important;}
 
+
+  /* Status buttons — always colored */
+  .status-btn[data-s="pago"]{background:#15803d;border-color:#15803d;color:#bbf7d0;}
+  .status-btn[data-s="agendado"]{background:#1d4ed8;border-color:#1d4ed8;color:#bfdbfe;}
+  .status-btn[data-s="pendente"]{background:#c2410c;border-color:#c2410c;color:#fed7aa;}
+  /* Active: full brightness + glow */
+  .status-btn.active[data-s="pago"]{opacity:1;filter:none;border-color:#4ade80;box-shadow:0 0 0 3px rgba(74,222,128,.3),0 4px 12px rgba(21,128,61,.5);}
+  .status-btn.active[data-s="agendado"]{opacity:1;filter:none;border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,250,.3),0 4px 12px rgba(29,78,216,.5);}
+  .status-btn.active[data-s="pendente"]{opacity:1;filter:none;border-color:#fb923c;box-shadow:0 0 0 3px rgba(251,146,60,.3),0 4px 12px rgba(194,65,12,.5);}
+  .status-btn:not(.active):hover{opacity:.8;filter:brightness(.85);}
+
+
+  /* Repeat buttons */
+  .repeat-opt[data-r="nao"]{background:#7f1d1d;border:2px solid #991b1b;color:#fca5a5;font-weight:700;}
+  .repeat-opt[data-r="fixo"]{background:#14532d;border:2px solid #15803d;color:#86efac;font-weight:700;}
+  .repeat-opt[data-r="var"]{background:#064e3b;border:2px solid #059669;color:#6ee7b7;font-weight:700;}
+  .repeat-opt.active[data-r="nao"]{border-color:#f87171;box-shadow:0 0 0 3px rgba(248,113,113,.25);opacity:1;filter:none;}
+  .repeat-opt.active[data-r="fixo"]{border-color:#4ade80;box-shadow:0 0 0 3px rgba(74,222,128,.25);opacity:1;filter:none;}
+  .repeat-opt.active[data-r="var"]{border-color:#34d399;box-shadow:0 0 0 3px rgba(52,211,153,.25);opacity:1;filter:none;}
+  .repeat-opt:not(.active){opacity:.55;filter:brightness(.75);}
+
 </style>
 </head>
 <body>
 
 <header>
-  <h1>Porquinha Tchitcha</h1>
+  <h1><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2040%2040%22%3E%3Ccircle%20cx%3D%2220%22%20cy%3D%2221%22%20r%3D%2214%22%20fill%3D%22%23f9a8d9%22%2F%3E%3Ccircle%20cx%3D%2214%22%20cy%3D%2211%22%20r%3D%224.5%22%20fill%3D%22%23f472b6%22%2F%3E%3Ccircle%20cx%3D%2226%22%20cy%3D%2211%22%20r%3D%224.5%22%20fill%3D%22%23f472b6%22%2F%3E%3Ccircle%20cx%3D%2220%22%20cy%3D%2226%22%20r%3D%225%22%20fill%3D%22%23f472b6%22%2F%3E%3Ccircle%20cx%3D%2217.5%22%20cy%3D%2227%22%20r%3D%221.5%22%20fill%3D%22%23db2777%22%2F%3E%3Ccircle%20cx%3D%2222.5%22%20cy%3D%2227%22%20r%3D%221.5%22%20fill%3D%22%23db2777%22%2F%3E%3Ccircle%20cx%3D%2215%22%20cy%3D%2219%22%20r%3D%223%22%20fill%3D%22%23fbbf24%22%2F%3E%3Ccircle%20cx%3D%2225%22%20cy%3D%2219%22%20r%3D%223%22%20fill%3D%22%23fbbf24%22%2F%3E%3Ctext%20x%3D%2215%22%20y%3D%2222%22%20font-size%3D%224%22%20font-weight%3D%22900%22%20fill%3D%22%2392400e%22%3E%24%3C%2Ftext%3E%3Ctext%20x%3D%2223%22%20y%3D%2222%22%20font-size%3D%224%22%20font-weight%3D%22900%22%20fill%3D%22%2392400e%22%3E%24%3C%2Ftext%3E%3C%2Fsvg%3E" style="width:32px;height:32px;vertical-align:middle;margin-right:8px;" alt="🐷"> Porquinha Tchitcha</h1>
   <p>Controle financeiro pessoal</p>
 </header>
 
@@ -2592,7 +2613,7 @@ function renderNubank(){
   if(futuro.length){
     futCard.style.display='block';
     var totalFut = futuro.reduce(function(s,f){return s+f.total;},0);
-    document.getElementById('nubankFuturoRows').innerHTML =
+    (document.getElementById('nubankFuturoRows')||{innerHTML:''}).innerHTML =
       futuro.map(function(f){
         return '<div class="futuro-row"><span>'+MONTHS_PT[f.m-1]+' '+f.y+'</span><span>'+R(f.total)+'</span></div>';
       }).join('')
@@ -2602,11 +2623,11 @@ function renderNubank(){
   // Lista de compras do mês (inclui parcelas de meses anteriores)
   document.getElementById('nubankComprasCount').textContent = comprasDoMes.length;
   if(!comprasDoMes.length){
-    document.getElementById('nubankComprasList').innerHTML='<div class="empty-state" style="padding:20px;color:var(--muted);text-align:center;font-size:.83rem;">Nenhuma compra neste mês</div>';
+    (document.getElementById('nubankComprasList')||{innerHTML:''}).innerHTML='<div class="empty-state" style="padding:20px;color:var(--muted);text-align:center;font-size:.83rem;">Nenhuma compra neste mês</div>';
     return;
   }
   var sorted = comprasDoMes.slice().sort(function(a,b){return (b.date||'').localeCompare(a.date||'');});
-  document.getElementById('nubankComprasList').innerHTML = sorted.map(function(c){
+  (document.getElementById('nubankComprasList')||{innerHTML:''}).innerHTML = sorted.map(function(c){
     // Calcula qual parcela é esta no mês atual
     // Offset from fatura month (respects day-13 closing rule)
     var fatLbl = mesFaturaNubank(c.date||'2026-01-01');
@@ -2795,14 +2816,14 @@ function openRelNubank(){
   var opts = meses.map(function(x){
     return '<option value="'+x.y+'_'+x.m+'">'+MONTHS_PT[x.m-1]+' '+x.y+'</option>';
   }).join('');
-  document.getElementById('nkRelDe').innerHTML=opts;
-  document.getElementById('nkRelAte').innerHTML=opts;
+  (document.getElementById('nkRelDe')||{innerHTML:''}).innerHTML=opts;
+  (document.getElementById('nkRelAte')||{innerHTML:''}).innerHTML=opts;
   document.getElementById('nkRelAte').selectedIndex=meses.length-1;
 
   // Categorias
   var cats=getNKCats();
   nkRelCatsSel=cats.slice();
-  document.getElementById('nkRelCatsGrid').innerHTML=cats.map(function(c,i){
+  (document.getElementById('nkRelCatsGrid')||{innerHTML:''}).innerHTML=cats.map(function(c,i){
     return '<button class="rel-cat-btn sel" id="nkrc'+i+'" onclick="nkToggleCat(\''+c+'\','+i+')">'+c+'</button>';
   }).join('');
 
@@ -3135,7 +3156,7 @@ render();
   </div>
   <div class="compras-list" id="nubankComprasList"></div>
 
-  <button class="btn-save" onclick="openRelNubank()" style="background:rgba(84,110,122,.15);color:#546e7a;box-shadow:none;margin-top:8px;">&#128196; Relatório do cartão</button>
+  <button class="btn-save" onclick="openRelNubank()" style="background:#1d4ed8;color:#fff;font-weight:700;box-shadow:0 4px 14px rgba(29,78,216,.4);margin-top:8px;">&#128196; Relatório do cartão</button>
   <button class="btn-save" onclick="openNovaCompra()" style="background:linear-gradient(135deg,#78909c,#546e7a);box-shadow:0 4px 14px rgba(84,110,122,.3);">+ Nova compra</button>
  </div>
 </div>
