@@ -2673,16 +2673,36 @@ function onNubankFaturaInput(el){
 
 function updateNubankExpValue(){
   var y = nkCurY||curY; var m = nkCurM||curM;
-  // Encontra a despesa do Nubank no mês visualizado
-  var arr = expenses[y]||[];
-  var idx = arr.findIndex(function(e){ return e.category==='Cartao Nubank' && e.month===m; });
-  if(idx===-1) return;
-  var fatReal = getNubankFatura(y,m);
+  var fatReal  = getNubankFatura(y,m);
   var totalCalc = calcNubankTotal(y,m);
   var valor = fatReal!=null ? fatReal : (totalCalc>0 ? totalCalc : null);
-  arr[idx].amount = valor;
+  if(valor==null) return; // nothing to update
+
+  if(!expenses[y]) expenses[y]=[];
+  var arr = expenses[y];
+  var idx = arr.findIndex(function(e){ return e.category==='Cartao Nubank' && e.month===m; });
+
+  if(idx===-1){
+    // Auto-create the expense entry in the main list
+    var dateStr = String(y)+'-'+String(m).padStart(2,'0')+'-01';
+    arr.push({
+      id: 'nk_'+y+'_'+m,
+      year: y, month: m,
+      desc: 'Cartão de Crédito',
+      category: 'Cartao Nubank',
+      date: dateStr,
+      amount: valor,
+      status: 'pendente',
+      note: ''
+    });
+    idx = arr.length - 1;
+  } else {
+    arr[idx].amount = valor;
+  }
   expenses[y] = arr;
   persist();
+  // Refresh main list if viewing the same month
+  if(y===curY && m===curM) render();
 }
 
 function openNovaCompra(){
