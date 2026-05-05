@@ -2032,7 +2032,10 @@ var PSI_PACIENTES = [];
 function loadPsiPacientes(){
   try{
     var s=localStorage.getItem('gabs_psi_pacientes');
-    if(s) PSI_PACIENTES=JSON.parse(s);
+    if(s){
+      PSI_PACIENTES=JSON.parse(s);
+      PSI_PACIENTES.sort(function(a,b){ return a.localeCompare(b,'pt'); });
+    }
   }catch(e){}
 }
 function savePsiPacientes(){
@@ -2205,6 +2208,7 @@ function cadastrarPaciente(){
     return;
   }
   PSI_PACIENTES.push(nome);
+  PSI_PACIENTES.sort(function(a,b){ return a.localeCompare(b,'pt'); });
   savePsiPacientes();
   renderPsiPanel();
 }
@@ -2943,181 +2947,6 @@ function gerarRelNubank(){
   document.body.style.overflow='hidden';
 }
 
-
-// ══ RELATÓRIO ══
-var relMesesSel = [];
-var relCatsSel  = [];
-var relHtml     = '';
-
-function openRelatorio(){
-  var sel = document.getElementById('relAno');
-  sel.innerHTML = Object.keys(expenses).sort().map(function(y){
-    return '<option value="'+y+'"'+(parseInt(y)===curY?' selected':'')+'>'+y+'</option>';
-  }).join('');
-  buildRelMeses();
-  buildRelCats();
-  document.getElementById('overlayRelatorio').classList.add('open');
-}
-
-function closeRelatorio(){
-  document.getElementById('overlayRelatorio').classList.remove('open');
-}
-
-function buildRelMeses(){
-  relMesesSel = [1,2,3,4,5,6,7,8,9,10,11,12];
-  document.getElementById('relMesesGrid').innerHTML = MONTHS_PT.map(function(m,i){
-    return '<button class="rel-month-btn sel" id="rm'+(i+1)+'" onclick="toggleRelMes('+(i+1)+')">'+m+'</button>';
-  }).join('');
-  document.getElementById('btnTodosMeses').classList.add('sel');
-}
-
-function buildRelCats(){
-  relCatsSel = cats.slice();
-  document.getElementById('relCatsGrid').innerHTML = cats.map(function(c,i){
-    return '<button class="rel-cat-btn sel" id="rc'+i+'" data-ci="'+i+'" onclick="toggleRelCat(\''+c.replace(/'/g,"\\'")+'\',' +i+')">'+c+'</button>';
-  }).join('');
-  document.getElementById('btnTodasCats').classList.add('sel');
-}
-
-function toggleRelMes(m){
-  var idx = relMesesSel.indexOf(m);
-  if(idx > -1) relMesesSel.splice(idx,1); else relMesesSel.push(m);
-  var btn = document.getElementById('rm'+m);
-  if(btn) btn.classList.toggle('sel', relMesesSel.indexOf(m)>-1);
-}
-
-function toggleRelCat(c,i){
-  var idx = relCatsSel.indexOf(c);
-  if(idx > -1) relCatsSel.splice(idx,1); else relCatsSel.push(c);
-  var btn = document.getElementById('rc'+i);
-  if(btn) btn.classList.toggle('sel', relCatsSel.indexOf(c)>-1);
-}
-
-function selAllMeses(){
-  relMesesSel=[1,2,3,4,5,6,7,8,9,10,11,12];
-  MONTHS_PT.forEach(function(_,i){ var b=document.getElementById('rm'+(i+1)); if(b) b.classList.add('sel'); });
-}
-function selNenhumMes(){
-  relMesesSel=[];
-  MONTHS_PT.forEach(function(_,i){ var b=document.getElementById('rm'+(i+1)); if(b) b.classList.remove('sel'); });
-}
-function selAllCats(){
-  relCatsSel=cats.slice();
-  cats.forEach(function(_,i){ var b=document.getElementById('rc'+i); if(b) b.classList.add('sel'); });
-}
-function selNenhumCat(){
-  relCatsSel=[];
-  cats.forEach(function(_,i){ var b=document.getElementById('rc'+i); if(b) b.classList.remove('sel'); });
-}
-
-function gerarRelatorio(){
-  if(!relMesesSel.length || !relCatsSel.length){ showToast('Selecione ao menos 1 mes e 1 categoria'); return; }
-  var y = parseInt(document.getElementById('relAno').value);
-  var mesesOrdenados = relMesesSel.slice().sort(function(a,b){return a-b;});
-  var totalGeral=0, totalPago=0, catTotals={};
-  var palette = ['#d4a853','#5cb88a','#5b9bd5','#e05c5c','#9b7fd4','#e0935c','#4db6ac','#f06292','#aed581','#ff8a65','#64b5f6','#ba68c8'];
-
-  var mesesData = mesesOrdenados.map(function(m){
-    var items = (expenses[y]||[]).filter(function(e){
-      return e.month===m && relCatsSel.indexOf(e.category)>-1 && e.amount!=null;
-    }).sort(function(a,b){return (a.date||'').localeCompare(b.date||'');});
-    var rec = getRec(y,m);
-    var totalRec = (rec.salarioLiquido!=null?rec.salarioLiquido:(rec.salario||0))
-      + (rec.outras||[]).reduce(function(s,o){return s+(o.val||0);},0);
-    var mTotal = items.reduce(function(s,e){return s+e.amount;},0);
-    var mPago  = items.filter(function(e){return e.status==='pago';}).reduce(function(s,e){return s+e.amount;},0);
-    totalGeral+=mTotal; totalPago+=mPago;
-    items.forEach(function(e){ if(!catTotals[e.category]) catTotals[e.category]=0; catTotals[e.category]+=e.amount; });
-    return {m:m, items:items, total:mTotal, pago:mPago, receitas:totalRec};
-  });
-
-  var catNames = Object.keys(catTotals).sort(function(a,b){return catTotals[b]-catTotals[a];});
-  var maxCat = catNames.length ? catTotals[catNames[0]] : 1;
-
-  var body = document.getElementById('reportBody');
-  body.innerHTML = ''
-    +'<div style="margin-bottom:6px;font-size:.75rem;color:#666;">'+new Date().toLocaleDateString('pt-BR')+' &bull; '+y+' &bull; '+mesesOrdenados.map(function(m){return MONTHS_PT[m-1];}).join(', ')+'</div>'
-    // Summary
-    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:20px;">'
-    +'<div style="border:1px solid #e0e0e0;border-radius:8px;padding:10px;"><div style="font-size:.6rem;text-transform:uppercase;color:#aaa;margin-bottom:3px;">Previsto</div><div style="font-size:.95rem;font-weight:bold;color:#e05c5c;">'+R(totalGeral)+'</div></div>'
-    +'<div style="border:1px solid #e0e0e0;border-radius:8px;padding:10px;"><div style="font-size:.6rem;text-transform:uppercase;color:#aaa;margin-bottom:3px;">Pago</div><div style="font-size:.95rem;font-weight:bold;color:#388e3c;">'+R(totalPago)+'</div></div>'
-    +'<div style="border:1px solid #e0e0e0;border-radius:8px;padding:10px;"><div style="font-size:.6rem;text-transform:uppercase;color:#aaa;margin-bottom:3px;">A pagar</div><div style="font-size:.95rem;font-weight:bold;color:#e0935c;">'+R(Math.max(0,totalGeral-totalPago))+'</div></div>'
-    +'</div>'
-    // Barras por categoria
-    +'<div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:#aaa;border-bottom:1px solid #eee;padding-bottom:6px;margin-bottom:12px;">Gastos por categoria</div>'
-    +catNames.map(function(c,i){
-      var pct = maxCat>0?(catTotals[c]/maxCat*100):0;
-      var color = palette[i%palette.length];
-      return '<div style="margin-bottom:10px;">'
-        +'<div style="display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:3px;">'
-        +'<span style="color:#333;">'+c+'</span><span style="font-weight:bold;color:'+color+'">'+R(catTotals[c])+'</span></div>'
-        +'<div style="background:#f0f0f0;border-radius:4px;height:10px;overflow:hidden;">'
-        +'<div style="width:'+pct.toFixed(1)+'%;height:100%;background:'+color+';border-radius:4px;"></div></div></div>';
-    }).join('')
-    // Tabelas por mês
-    +'<div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:#aaa;border-bottom:1px solid #eee;padding-bottom:6px;margin:20px 0 12px;">Detalhe por mês</div>'
-    +mesesData.filter(function(md){return md.items.length>0;}).map(function(md){
-      return '<div style="font-size:.95rem;font-weight:bold;color:#333;margin:14px 0 6px;">'+MONTHS_PT[md.m-1]+'</div>'
-        +'<div style="display:flex;flex-wrap:wrap;gap:10px;font-size:.73rem;color:#666;margin-bottom:8px;">'
-        +(md.receitas>0?'<span>Receitas: <strong>'+R(md.receitas)+'</strong></span>':'')
-        +'<span>Despesas: <strong>'+R(md.total)+'</strong></span>'
-        +'<span>Pago: <strong style="color:#388e3c">'+R(md.pago)+'</strong></span>'
-        +(md.receitas>0?'<span>Saldo: <strong style="color:'+(md.receitas-md.total>=0?'#388e3c':'#e05c5c')+'">'+R(md.receitas-md.total)+'</strong></span>':'')
-        +'</div>'
-        +'<table style="width:100%;border-collapse:collapse;font-size:.73rem;margin-bottom:12px;">'
-        +'<thead><tr style="background:#f7f7f7;"><th style="padding:6px;text-align:left;color:#aaa;border-bottom:1px solid #eee;">Data</th><th style="padding:6px;text-align:left;color:#aaa;border-bottom:1px solid #eee;">Descrição</th><th style="padding:6px;text-align:left;color:#aaa;border-bottom:1px solid #eee;">Status</th><th style="padding:6px;text-align:right;color:#aaa;border-bottom:1px solid #eee;">Valor</th></tr></thead>'
-        +'<tbody>'+md.items.map(function(e){
-          var stColor = e.status==='pago'?'#388e3c':e.status==='agendado'?'#1976d2':'#999';
-          var stLabel = {pago:'Pago',agendado:'Agendado',pendente:'Pendente'}[e.status];
-          return '<tr style="border-bottom:1px solid #f5f5f5;">'
-            +'<td style="padding:6px;color:#666;">'+fmtD(e.date)+'</td>'
-            +'<td style="padding:6px;">'+e.desc+(e.note?' <span style="color:#aaa;font-size:.68rem;">'+e.note+'</span>':'')+'</td>'
-            +'<td style="padding:6px;"><span style="font-size:.65rem;color:'+stColor+'">'+stLabel+'</span></td>'
-            +'<td style="padding:6px;text-align:right;font-weight:bold;">'+R(e.amount)+'</td>'
-            +'</tr>';
-        }).join('')+'</tbody></table>';
-    }).join('');
-
-  closeRelatorio();
-  document.getElementById('overlayReport').style.display='block';
-  document.body.style.overflow='hidden';
-}
-
-function fecharRelatorio(){
-  document.getElementById('overlayReport').style.display='none';
-  document.body.style.overflow='';
-}
-
-function compartilharRelatorio(){
-  // Abre janela de impressão — no celular gera PDF
-  var body = document.getElementById('reportBody');
-  var conteudo = body.innerHTML;
-  var janela = window.open('','_blank','width=800,height=600');
-  janela.document.write(
-    '<!DOCTYPE html><html><head><meta charset="UTF-8">'
-    +'<meta name="viewport" content="width=device-width,initial-scale=1">'
-    +'<title>Relatório Seu Nonô</title>'
-    +'<style>'
-    +'body{font-family:Arial,sans-serif;padding:20px;color:#222;max-width:600px;margin:0 auto;}'
-    +'@media print{.no-print{display:none!important;}}'
-    +'</style></head><body>'
-    +'<div class="no-print" style="text-align:center;margin-bottom:16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">'
-    +'<button onclick="window.print()" style="background:#546e7a;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:.9rem;cursor:pointer;">📄 Salvar PDF</button>'
-    +'<button onclick="compartilharWhats()" style="background:#25d366;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:.9rem;cursor:pointer;">💬 WhatsApp</button>'
-    +'<button onclick="window.close()" style="background:#eee;color:#333;border:none;border-radius:8px;padding:10px 20px;font-size:.9rem;cursor:pointer;">✕ Fechar</button>'
-    +'</div>'
-    +conteudo
-    +'<script>'
-    +'function compartilharWhats(){'
-    +'  var texto = document.body.innerText.replace(/[\\t]+/g," ");'
-    +'  var url = "https://wa.me/?text="+encodeURIComponent(texto.substring(0,2000));'
-    +'  window.open(url,"_blank");'
-    +'}'
-    +'<\/script>'
-    +'</body></html>'
-  );
-  janela.document.close();
-}
 
 
 // ══ INIT ══
