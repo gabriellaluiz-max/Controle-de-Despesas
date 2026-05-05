@@ -689,7 +689,7 @@ var editId   = null;
 
 // ══ STORAGE ══
 // ══ VERSÃO / MIGRAÇÃO ══
-var APP_VERSION = 3;
+var APP_VERSION = 6;
 
 function checkAndMigrate(){
   var savedVersion = parseInt(localStorage.getItem('desp_version')||'0');
@@ -701,8 +701,11 @@ function checkAndMigrate(){
                    'd25_exp','d25_notes','d25_rec','d25_cats',
                    'despesas_v2','despesas_v3','despesas_v4'];
     oldKeys.forEach(function(k){ localStorage.removeItem(k); });
-    // Reset completo — novo app Porquinha Tchitcha
-    expenses={};notes={};receitas={};cats=DEFAULT_CATS.slice();
+    // Só reseta se for primeira instalação (versão 0)
+    // Para atualizações normais, preserva todos os dados
+    if(savedVersion === 0){
+      expenses={};notes={};receitas={};cats=DEFAULT_CATS.slice();
+    }
     localStorage.setItem('desp_version', APP_VERSION);
   }
 }
@@ -1478,9 +1481,9 @@ function renderContracheque(y,m){
   var cc = getCC(y,m);
   var rec = getRec(y,m);
 
-  // Salário bruto formatado
+  // Salário — só preenche se o overlay estiver aberto
   var si = document.getElementById('senSalario');
-  si.value = rec.salario != null ? rec.salario.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) : '';
+  if(si) si.value = rec.salario != null ? rec.salario.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) : '';
 
   // Descontos formatados
   var fields = {ccINSS: cc.inss, ccIR: cc.ir};
@@ -1498,6 +1501,7 @@ function renderContracheque(y,m){
 
 function renderDescontosEventuais(cc){
   var div = document.getElementById('descontosEventuais');
+  if(!div) return;
   div.innerHTML = (cc.eventuais||[]).map(function(e){
     return '<div class="cc-row">'
       +'<input type="text" class="cc-input" style="width:100%;font-family:\'DM Sans\',sans-serif;font-size:.78rem;color:var(--text)" placeholder="Descricao" value="'+e.desc+'" oninput="onEvDesc(\''+e.id+'\',this.value)"/>'
@@ -2713,8 +2717,7 @@ function updateNubankExpValue(){
   }
   expenses[y] = arr;
   persist();
-  // Refresh main list if viewing the same month
-  if(y===curY && m===curM) render();
+  // NOTE: do NOT call render() here — render() already calls atualizarNubankNoMes causing infinite loop
 }
 
 function openNovaCompra(){
