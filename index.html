@@ -1013,7 +1013,7 @@ function render(){
   renderOutrasReceitas(rec);
   // psi rendered on overlay open
   var salEf=rec.salario||0;
-  var psiTot=Object.values(rec.psi||{}).reduce(function(s,itens){return s+itens.reduce(function(s2,i){return s2+(i.valor||0);},0);},0);
+  var psiTot=Object.values(rec.psi||{}).reduce(function(s,itens){if(!Array.isArray(itens))return s;return s+itens.reduce(function(s2,i){return s2+(i.valor||0);},0);},0);
   var totalRec=salEf+psiTot+(rec.outras||[]).reduce(function(s,o){return s+(o.val||0);},0);
   document.getElementById('receitasTotal').textContent=totalRec>0?R(totalRec):'-';
   var elS=document.getElementById('recSenado'); if(elS) elS.textContent=salEf>0?R(salEf):'-';
@@ -1138,6 +1138,7 @@ function delOutraReceita(id){
 function updateReceitasUI(rec){
   var salEfetivo = rec.salario || 0;
   var psiTotal = Object.values(rec.psi||{}).reduce(function(s,itens){
+    if(!Array.isArray(itens)) return s;
     return s + itens.reduce(function(s2,i){return s2+(i.valor||0);},0);
   },0);
   var total = salEfetivo + psiTotal + (rec.outras||[]).reduce(function(s,o){return s+(o.val||0);},0);
@@ -1552,6 +1553,7 @@ function calcLiquido(y,m){
   var rec = getRec(y,m);
   var salario = rec.salario || 0;
   var psiRec = Object.values(rec.psi||{}).reduce(function(s,itens){
+    if(!Array.isArray(itens)) return s;
     return s + itens.reduce(function(s2,i){ return s2+(i.valor||0); },0);
   },0);
   var outrasRec = psiRec + (rec.outras||[]).reduce(function(s,o){return s+(o.val||0);},0);
