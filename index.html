@@ -693,6 +693,7 @@ var APP_VERSION = 3;
 
 function checkAndMigrate(){
   var savedVersion = parseInt(localStorage.getItem('desp_version')||'0');
+  console.log('[migrate] savedVersion='+savedVersion+' APP_VERSION='+APP_VERSION);
   if(savedVersion < APP_VERSION){
     // Limpa chaves muito antigas (versões 1 e anteriores)
     var oldKeys = ['desp_exp','desp_notes','desp_rec','desp_cats',
@@ -707,6 +708,7 @@ function checkAndMigrate(){
 }
 
 function load(){
+  console.log('[load] desp_version='+localStorage.getItem('desp_version')+' desp_exp3='+( localStorage.getItem('desp_exp3') ? 'EXISTS('+localStorage.getItem('desp_exp3').length+'chars)' : 'NULL'));
   try{
     var e=localStorage.getItem('desp_exp3');
     var n=localStorage.getItem('desp_notes3');
@@ -720,10 +722,16 @@ function load(){
 }
 
 function persist(){
-  localStorage.setItem('desp_exp3',   JSON.stringify(expenses));
-  localStorage.setItem('desp_notes3', JSON.stringify(notes));
-  localStorage.setItem('desp_rec3',   JSON.stringify(receitas));
-  localStorage.setItem('desp_cats3',  JSON.stringify(cats));
+  try {
+    localStorage.setItem('desp_exp3',   JSON.stringify(expenses));
+    localStorage.setItem('desp_notes3', JSON.stringify(notes));
+    localStorage.setItem('desp_rec3',   JSON.stringify(receitas));
+    localStorage.setItem('desp_cats3',  JSON.stringify(cats));
+    console.log('[persist] saved. expenses keys:', Object.keys(expenses), 'version:', localStorage.getItem('desp_version'));
+  } catch(e) {
+    console.error('[persist] ERRO:', e.message);
+    showToast('Erro ao salvar: ' + e.message);
+  }
 }
 
 function getYearExp(y){return expenses[y]||[];}
