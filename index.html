@@ -2518,13 +2518,15 @@ function setNubankFatura(y,m,v){ var r=getRec(y,m); r.nubankFatura=v; setRec(y,m
 
 function calcNubankTotal(y,m){
   // Coleta compras armazenadas em todos os meses
+  // Usa IIFE para garantir closure correta de y2/m2 (bug de var em for+forEach)
   var todasCompras = [];
   for(var y2=2025; y2<=y+1; y2++){
     for(var m2=1; m2<=12; m2++){
-      getNubankCompras(y2,m2).forEach(function(c){
-        // Guarda o mês de armazenamento junto com a compra
-        todasCompras.push({c:c, storY:y2, storM:m2});
-      });
+      (function(sy,sm){
+        getNubankCompras(sy,sm).forEach(function(c){
+          todasCompras.push({c:c, storY:sy, storM:sm});
+        });
+      })(y2,m2);
     }
   }
 
@@ -2591,9 +2593,11 @@ function renderNubank(){
   var todasCompras = [];
   for(var y2=2025; y2<=y+1; y2++){
     for(var m2=1; m2<=12; m2++){
-      getNubankCompras(y2,m2).forEach(function(c){
-        todasCompras.push({c:c, storY:y2, storM:m2});
-      });
+      (function(sy,sm){
+        getNubankCompras(sy,sm).forEach(function(c){
+          todasCompras.push({c:c, storY:sy, storM:sm});
+        });
+      })(y2,m2);
     }
   }
 
